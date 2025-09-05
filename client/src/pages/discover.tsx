@@ -29,22 +29,29 @@ export default function Discover() {
     <div className="w-full h-screen bg-background overflow-hidden">
       <div className="flex flex-col h-full">
         {/* Search Header */}
-        <div className="flex items-center p-4 border-b border-border">
-          <Link href="/">
-            <Button variant="ghost" size="icon" className="mr-4" data-testid="button-back">
-              <X className="h-6 w-6" />
-            </Button>
-          </Link>
+        <div className="flex flex-col p-4 bg-gradient-to-b from-background to-background/95 border-b border-border/50">
+          <div className="flex items-center mb-3">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="mr-4 hover:bg-primary/10 rounded-2xl" data-testid="button-back">
+                <X className="h-6 w-6" />
+              </Button>
+            </Link>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Discover
+            </h1>
+          </div>
           <div className="flex-1 relative">
             <Input
               type="text"
               placeholder="Search accounts and videos"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-muted text-foreground placeholder-muted-foreground rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-primary"
+              className="w-full bg-muted/50 text-foreground placeholder-muted-foreground rounded-2xl px-4 py-3 pr-12 border border-border/30 focus:ring-2 focus:ring-primary focus:bg-muted backdrop-blur-sm"
               data-testid="input-search"
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+              <Search className="text-primary w-4 h-4" />
+            </div>
           </div>
         </div>
 

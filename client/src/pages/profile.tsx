@@ -97,39 +97,54 @@ export default function Profile() {
         <div className="flex-1 overflow-y-auto pb-20">
           {/* Profile Info */}
           <div className="p-6 text-center">
-            <img
-              src={user.avatar}
-              alt={`${user.displayName} profile picture`}
-              className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              data-testid="img-avatar"
-            />
+            <div className="relative inline-block mb-4">
+              <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary/30 via-accent/20 to-primary/30 p-1 mx-auto">
+                <img
+                  src={user.avatar}
+                  alt={`${user.displayName} profile picture`}
+                  className="w-full h-full rounded-3xl object-cover"
+                  data-testid="img-avatar"
+                />
+              </div>
+              {user.verified && (
+                <div className="absolute -bottom-1 right-2 w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-background font-bold text-xs">✓</span>
+                </div>
+              )}
+            </div>
             
-            <h2 className="text-xl font-bold mb-2 text-foreground" data-testid="text-display-name">
+            <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent" data-testid="text-display-name">
               {user.displayName}
             </h2>
-            <p className="text-muted-foreground mb-4" data-testid="text-bio">
+            <p className="text-muted-foreground mb-6 max-w-sm mx-auto" data-testid="text-bio">
               {user.bio}
             </p>
             
             {/* Stats */}
-            <div className="flex justify-center space-x-8 mb-6">
+            <div className="flex justify-center space-x-8 mb-8">
               <div className="text-center">
-                <div className="text-lg font-bold text-foreground" data-testid="text-following">
-                  {formatCount(user.following)}
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-2 mx-auto border border-primary/30">
+                  <div className="text-xl font-bold text-foreground" data-testid="text-following">
+                    {formatCount(user.following)}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">Following</div>
+                <div className="text-sm text-muted-foreground font-medium">Following</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-foreground" data-testid="text-followers">
-                  {formatCount(user.followers)}
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center mb-2 mx-auto border border-accent/30">
+                  <div className="text-xl font-bold text-foreground" data-testid="text-followers">
+                    {formatCount(user.followers)}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">Followers</div>
+                <div className="text-sm text-muted-foreground font-medium">Followers</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-foreground" data-testid="text-likes">
-                  {formatCount(user.totalLikes)}
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 flex items-center justify-center mb-2 mx-auto border border-primary/30">
+                  <div className="text-xl font-bold text-foreground" data-testid="text-likes">
+                    {formatCount(user.totalLikes)}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">Likes</div>
+                <div className="text-sm text-muted-foreground font-medium">Likes</div>
               </div>
             </div>
 
@@ -138,12 +153,16 @@ export default function Profile() {
               <Button
                 onClick={() => followMutation.mutate()}
                 disabled={followMutation.isPending}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 rounded-2xl px-8 py-3 font-semibold shadow-lg shadow-primary/30 transform hover:scale-105 transition-all"
                 data-testid="button-follow"
               >
                 {followMutation.isPending ? "Loading..." : followStatus?.following ? "Following" : "Follow"}
               </Button>
-              <Button variant="secondary" data-testid="button-message">
+              <Button 
+                variant="secondary" 
+                className="rounded-2xl px-8 py-3 font-semibold border border-border hover:bg-muted/50 transform hover:scale-105 transition-all" 
+                data-testid="button-message"
+              >
                 Message
               </Button>
             </div>

@@ -49,8 +49,8 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
   ];
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-90 backdrop-blur-lg border-t border-gray-800">
-      <div className="flex items-center justify-around py-2">
+    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-xl border-t border-border/50">
+      <div className="flex items-center justify-around py-3 px-4">
         {navItems.map((item) => {
           const IconComponent = item.icon;
 
@@ -58,13 +58,12 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
             return (
               <button
                 key={item.id}
-                className="flex flex-col items-center py-2 px-2"
+                className="flex flex-col items-center py-1 px-2"
                 data-testid="button-create"
               >
-                <div className="w-12 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center relative">
-                  <Plus className="text-black text-xl font-bold" />
-                  <div className="absolute -left-2 top-0 w-8 h-8 bg-accent rounded-lg opacity-80"></div>
-                  <div className="absolute -right-2 top-0 w-8 h-8 bg-primary rounded-lg opacity-80"></div>
+                <div className="w-14 h-10 bg-gradient-to-br from-primary via-accent to-primary rounded-2xl flex items-center justify-center relative shadow-lg shadow-primary/30 transform hover:scale-105 transition-transform">
+                  <Plus className="text-background text-xl font-bold" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
                 </div>
               </button>
             );
@@ -73,15 +72,21 @@ export default function BottomNavigation({ activeTab }: BottomNavigationProps) {
           return (
             <Link key={item.id} href={item.path}>
               <button
-                className={`flex flex-col items-center py-2 px-4 transition-colors relative ${
-                  item.active ? "text-white" : "text-gray-400 hover:text-white"
+                className={`flex flex-col items-center py-2 px-3 transition-all duration-200 relative rounded-xl ${
+                  item.active 
+                    ? "text-primary bg-primary/10 shadow-lg shadow-primary/20" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 }`}
                 data-testid={`nav-${item.id}`}
               >
-                <IconComponent className="w-6 h-6" />
+                <div className={`p-1 rounded-lg transition-all ${
+                  item.active ? "bg-primary/20" : ""
+                }`}>
+                  <IconComponent className="w-6 h-6" />
+                </div>
                 <span className="text-xs mt-1 font-medium">{item.label}</span>
                 {item.hasNotification && (
-                  <div className="absolute top-1 right-3 w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="absolute -top-1 right-2 w-3 h-3 bg-gradient-to-br from-accent to-primary rounded-full shadow-lg animate-pulse"></div>
                 )}
               </button>
             </Link>

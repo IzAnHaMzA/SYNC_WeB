@@ -70,17 +70,19 @@ export default function VideoActions({ video }: VideoActionsProps) {
 
   return (
     <>
-      <div className="absolute right-4 bottom-24 flex flex-col items-center space-y-6 pointer-events-auto">
+      <div className="absolute right-4 bottom-28 flex flex-col items-center space-y-4 pointer-events-auto">
         {/* User Avatar */}
         <Link href={`/profile/${video.user?.username}`}>
-          <div className="relative cursor-pointer" data-testid="avatar-link">
-            <img
-              src={video.user?.avatar}
-              alt={`${video.user?.username} avatar`}
-              className="w-12 h-12 rounded-full border-2 border-white object-cover"
-            />
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-              <Plus className="w-3 h-3 text-white" />
+          <div className="relative cursor-pointer group" data-testid="avatar-link">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/30 to-accent/30 p-0.5 transform group-hover:scale-105 transition-transform">
+              <img
+                src={video.user?.avatar}
+                alt={`${video.user?.username} avatar`}
+                className="w-full h-full rounded-2xl object-cover"
+              />
+            </div>
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-7 h-7 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
+              <Plus className="w-4 h-4 text-background font-bold" />
             </div>
           </div>
         </Link>
@@ -90,8 +92,8 @@ export default function VideoActions({ video }: VideoActionsProps) {
           <button
             onClick={handleLike}
             disabled={likeMutation.isPending}
-            className={`w-12 h-12 rounded-full floating-action flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20 ${
-              isLiked ? "heart-pulse" : ""
+            className={`w-14 h-14 rounded-2xl bg-background/20 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all duration-200 hover:bg-primary/20 hover:border-primary/50 hover:scale-105 ${
+              isLiked ? "heart-pulse bg-primary/30 border-primary/70" : ""
             }`}
             data-testid="button-like"
           >
@@ -101,7 +103,7 @@ export default function VideoActions({ video }: VideoActionsProps) {
               }`}
             />
           </button>
-          <span className="text-white text-sm font-semibold mt-1" data-testid="text-like-count">
+          <span className="text-white text-sm font-semibold mt-2 drop-shadow-lg" data-testid="text-like-count">
             {formatCount(video.likes)}
           </span>
         </div>
@@ -110,12 +112,12 @@ export default function VideoActions({ video }: VideoActionsProps) {
         <div className="flex flex-col items-center">
           <button
             onClick={() => setShowComments(true)}
-            className="w-12 h-12 rounded-full floating-action flex items-center justify-center text-white hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+            className="w-14 h-14 rounded-2xl bg-background/20 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-accent/20 hover:border-accent/50 hover:scale-105 transition-all duration-200"
             data-testid="button-comment"
           >
             <MessageCircle className="w-7 h-7" />
           </button>
-          <span className="text-white text-sm font-semibold mt-1" data-testid="text-comment-count">
+          <span className="text-white text-sm font-semibold mt-2 drop-shadow-lg" data-testid="text-comment-count">
             {formatCount(video.comments)}
           </span>
         </div>
@@ -124,22 +126,22 @@ export default function VideoActions({ video }: VideoActionsProps) {
         <div className="flex flex-col items-center">
           <button
             onClick={handleShare}
-            className="w-12 h-12 rounded-full floating-action flex items-center justify-center text-white hover:bg-white hover:bg-opacity-20 transition-all duration-200"
+            className="w-14 h-14 rounded-2xl bg-background/20 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:border-white/40 hover:scale-105 transition-all duration-200"
             data-testid="button-share"
           >
             <Share className="w-7 h-7" />
           </button>
-          <span className="text-white text-sm font-semibold mt-1" data-testid="text-share-count">
+          <span className="text-white text-sm font-semibold mt-2 drop-shadow-lg" data-testid="text-share-count">
             {formatCount(video.shares)}
           </span>
         </div>
 
         {/* Music Disc */}
-        <div className="w-12 h-12 rounded-full bg-black border-2 border-white overflow-hidden music-disc" data-testid="music-disc">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent p-0.5 music-disc shadow-lg" data-testid="music-disc">
           <img
             src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"
             alt="Music disc"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-2xl"
           />
         </div>
       </div>

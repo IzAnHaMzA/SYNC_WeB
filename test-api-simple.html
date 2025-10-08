@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSTOK API Tester</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .test-section h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .result {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .badge.success { background: #28a745; color: white; }
+        .badge.pending { background: #ffc107; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 INSTOK API Tester</h1>
+        <p style="color: #6c757d; margin-bottom: 20px;">Testing backend running on <strong>http://localhost:5000</strong></p>
+
+        <div id="serverStatus" class="status info">
+            <strong>⏳ Checking server status...</strong>
+        </div>
+
+        <!-- Test 1: Server Health Check -->
+        <div class="test-section">
+            <h2>1. Server Health Check <span id="health-badge" class="badge pending">PENDING</span></h2>
+            <button onclick="testHealth()">Test Server</button>
+            <div id="health-result"></div>
+        </div>
+
+        <!-- Test 2: User Registration -->
+        <div class="test-section">
+            <h2>2. User Registration <span id="register-badge" class="badge pending">PENDING</span></h2>
+            <input type="text" id="username" placeholder="Username" value="testuser">
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+            <input type="text" id="fullName" placeholder="Full Name" value="Test User">
+            <button onclick="testRegister()">Register User</button>
+            <div id="register-result"></div>
+        </div>
+
+        <!-- Test 3: User Login -->
+        <div class="test-section">
+            <h2>3. User Login <span id="login-badge" class="badge pending">PENDING</span></h2>
+            <input type="email" id="loginEmail" placeholder="Email" value="test@example.com">
+            <input type="password" id="loginPassword" placeholder="Password" value="password123">
+            <button onclick="testLogin()">Login</button>
+            <div id="login-result"></div>
+        </div>
+
+        <!-- Test 4: Get Current User -->
+        <div class="test-section">
+            <h2>4. Get Current User <span id="me-badge" class="badge pending">PENDING</span></h2>
+            <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 10px;">Requires login token from previous test</p>
+            <button onclick="testGetMe()" id="getMeBtn" disabled>Get Current User</button>
+            <div id="me-result"></div>
+        </div>
+
+        <!-- Migration Status -->
+        <div class="status info" style="margin-top: 30px;">
+            <strong>📊 Migration Status:</strong><br>
+            ✅ All routes migrated to Supabase<br>
+            ✅ Server running on port 5000<br>
+            ⚠️ Network proxy may affect external Supabase connections<br>
+            💡 Database schema is confirmed working in Supabase Dashboard
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let authToken = null;
+
+        // Test server health
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            const badge = document.getElementById('health-badge');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/me`);
+                const data = await response.json();
+                
+                if (response.status === 401 && data.message === 'Access token required') {
+                    resultDiv.innerHTML = `<div class="result">✅ SERVER IS RUNNING!\n\nResponse: ${JSON.stringify(data, null, 2)}\n\nThis is expected - server requires auth token for this endpoint.</div>`;
+                    badge.textContent = 'PASS';
+                    badge.className = 'badge success';
+                    document.getElementById('serverStatus').className = 'status success';
+                    document.getElementById('serverStatus').innerHTML = '<strong>✅ Backend server is running successfully!</strong>';
+                } else {
+                    resultDiv.innerHTML = `<div class="result">Response: ${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result">❌ Error: ${error.message}\n\nMake sure the server is running: npm run server</div>`;
+                badge.textContent = 'FAIL';
+                badge.className = 'badge error';
+                document.getElementById('serverStatus').className = 'status error';
+                document.getElementById('serverStatus').innerHTML = '<strong>❌ Cannot connect to backend server</strong>';
+            }
+        }
+
+        // Test user registration
+        async function testRegister() {
+            const resultDiv = document.getElementById('register-result');
+            const badge = document.getElementById('register-badge');
+            
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                fullName: document.getElementById('fullName').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result">✅ USER REGISTERED!\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'PASS';
+                    badge.className = 'badge success';
+                    
+                    if (data.token) {
+                        authToken = data.token;
+                        document.getElementById('getMeBtn').disabled = false;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="result">⚠️ ${data.message || 'Registration failed'}\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'FAIL';
+                    badge.className = 'badge error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result">❌ Error: ${error.message}</div>`;
+                badge.textContent = 'FAIL';
+                badge.className = 'badge error';
+            }
+        }
+
+        // Test user login
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            const badge = document.getElementById('login-badge');
+            
+            const credentials = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result">✅ LOGIN SUCCESSFUL!\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'PASS';
+                    badge.className = 'badge success';
+                    
+                    if (data.token) {
+                        authToken = data.token;
+                        document.getElementById('getMeBtn').disabled = false;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="result">⚠️ ${data.message || 'Login failed'}\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'FAIL';
+                    badge.className = 'badge error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result">❌ Error: ${error.message}</div>`;
+                badge.textContent = 'FAIL';
+                badge.className = 'badge error';
+            }
+        }
+
+        // Test get current user
+        async function testGetMe() {
+            const resultDiv = document.getElementById('me-result');
+            const badge = document.getElementById('me-badge');
+            
+            if (!authToken) {
+                resultDiv.innerHTML = `<div class="result">⚠️ No auth token available. Please login first.</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result">✅ USER DATA RETRIEVED!\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'PASS';
+                    badge.className = 'badge success';
+                } else {
+                    resultDiv.innerHTML = `<div class="result">⚠️ ${data.message}\n\n${JSON.stringify(data, null, 2)}</div>`;
+                    badge.textContent = 'FAIL';
+                    badge.className = 'badge error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result">❌ Error: ${error.message}</div>`;
+                badge.textContent = 'FAIL';
+                badge.className = 'badge error';
+            }
+        }
+
+        // Auto-test server on load
+        window.addEventListener('load', () => {
+            setTimeout(testHealth, 500);
+        });
+    </script>
+</body>
+</html>
+

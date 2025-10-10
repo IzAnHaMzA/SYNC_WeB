@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSTOK Deployment Checker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fafafa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #262626;
+            margin-bottom: 20px;
+        }
+        .test-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0095f6;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .pending {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        button {
+            background: #0095f6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0077cc;
+        }
+        .link {
+            color: #0095f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 INSTOK Deployment Status</h1>
+        
+        <div id="results">
+            <div class="test-item pending">
+                <strong>Status:</strong> Click "Test All" to check your deployment
+            </div>
+        </div>
+
+        <button onclick="testAll()">🧪 Test All</button>
+        <button onclick="window.open('https://izanhamza.github.io/SYNC_WeB/', '_blank')">🌐 Open App</button>
+        <button onclick="window.open('https://sync-we-b.vercel.app/api/health', '_blank')">🔧 Test Backend</button>
+
+        <h2>📋 Your URLs:</h2>
+        <ul>
+            <li><strong>Frontend:</strong> <a class="link" href="https://izanhamza.github.io/SYNC_WeB/" target="_blank">https://izanhamza.github.io/SYNC_WeB/</a></li>
+            <li><strong>Backend:</strong> <a class="link" href="https://sync-we-b.vercel.app/api/health" target="_blank">https://sync-we-b.vercel.app</a></li>
+            <li><strong>GitHub Repo:</strong> <a class="link" href="https://github.com/IzAnHaMzA/SYNC_WeB" target="_blank">https://github.com/IzAnHaMzA/SYNC_WeB</a></li>
+        </ul>
+    </div>
+
+    <script>
+        async function testAll() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="test-item pending"><strong>Testing...</strong> Please wait...</div>';
+
+            const tests = [];
+
+            // Test 1: Frontend (GitHub Pages)
+            try {
+                const frontendResponse = await fetch('https://izanhamza.github.io/SYNC_WeB/', {
+                    mode: 'no-cors'
+                });
+                tests.push({
+                    name: 'Frontend (GitHub Pages)',
+                    status: 'success',
+                    message: 'Frontend is accessible! ✅'
+                });
+            } catch (error) {
+                tests.push({
+                    name: 'Frontend (GitHub Pages)',
+                    status: 'error',
+                    message: 'Frontend not accessible: ' + error.message
+                });
+            }
+
+            // Test 2: Backend Health Check
+            try {
+                const backendResponse = await fetch('https://sync-we-b.vercel.app/api/health');
+                const data = await backendResponse.json();
+                tests.push({
+                    name: 'Backend API (Vercel)',
+                    status: 'success',
+                    message: 'Backend is running! ✅<br><pre>' + JSON.stringify(data, null, 2) + '</pre>'
+                });
+            } catch (error) {
+                tests.push({
+                    name: 'Backend API (Vercel)',
+                    status: 'error',
+                    message: 'Backend error: ' + error.message
+                });
+            }
+
+            // Display results
+            results.innerHTML = tests.map(test => `
+                <div class="test-item ${test.status}">
+                    <strong>${test.name}:</strong><br>
+                    ${test.message}
+                </div>
+            `).join('');
+
+            // Add summary
+            const allSuccess = tests.every(t => t.status === 'success');
+            results.innerHTML += `
+                <div class="test-item ${allSuccess ? 'success' : 'pending'}">
+                    <strong>Overall Status:</strong><br>
+                    ${allSuccess 
+                        ? '🎉 All systems operational! Your app is live and working!' 
+                        : '⚠️ Some issues detected. Check details above.'}
+                </div>
+            `;
+        }
+
+        // Instructions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('results').innerHTML += `
+                <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px;">
+                    <h3>📝 How to Test Your App:</h3>
+                    <ol>
+                        <li>Click "Test All" to check if frontend and backend are accessible</li>
+                        <li>Click "Open App" to visit your live Instagram clone</li>
+                        <li>Try signing up with a new account</li>
+                        <li>Test login, creating posts, and other features</li>
+                    </ol>
+                    
+                    <h3>🐛 If you see a blank page:</h3>
+                    <ul>
+                        <li>Wait 2-3 minutes (GitHub Pages needs time to update)</li>
+                        <li>Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</li>
+                        <li>Clear browser cache</li>
+                        <li>Try in incognito/private mode</li>
+                    </ul>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
+

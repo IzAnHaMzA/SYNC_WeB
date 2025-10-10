@@ -1,0 +1,29 @@
+# Ignore React Native and Android files (not needed for backend deployment)
+android/
+ios/
+App.tsx
+index.js
+app.json
+metro.config.js
+babel.config.js
+react-native.config.cjs
+
+# Ignore frontend files (deployed separately to GitHub Pages)
+src/
+public/
+index.html
+vite.config.ts
+tsconfig.react-native.json
+
+# Ignore build outputs
+dist/
+build/
+
+# Ignore development files
+.vscode/
+.idea/
+
+# Ignore documentation
+*.md
+!README.md
+

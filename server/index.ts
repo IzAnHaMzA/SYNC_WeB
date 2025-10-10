@@ -1,12 +1,17 @@
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
+
+// Verify Supabase configuration
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn('⚠️  Warning: Supabase credentials not found in .env file');
+  console.warn('Database operations will fail. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+}
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -51,25 +56,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Connect to MongoDB
-const connectDB = async () => {
-  try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/instagram-clone';
-    await mongoose.connect(mongoURI);
-    console.log('MongoDB connected successfully');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  }
-};
-
-// Start server
-const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`API URL: http://localhost:${PORT}/api`);
-  });
-};
-
-startServer();
+// Start server (Supabase connection is handled in individual routes)
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`📡 API URL: http://localhost:${PORT}/api`);
+  console.log(`🗄️  Database: Supabase (${process.env.SUPABASE_URL ? 'Connected' : 'Not configured'})`);
+  console.log(`🔑 JWT Secret: ${process.env.JWT_SECRET ? 'Configured' : 'Not configured'}`);
+});

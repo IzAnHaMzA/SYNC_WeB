@@ -4,6 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/SYNC_WeB/', // GitHub Pages base path
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -17,5 +18,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
   },
 })

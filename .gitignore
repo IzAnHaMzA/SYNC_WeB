@@ -77,3 +77,4 @@ buck-out/
 # Watchman
 .watchman-config
 
+.vercel

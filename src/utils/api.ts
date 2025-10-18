@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use Vercel backend in both development and production
-const API_BASE_URL = 'https://sync-we-ncqbka6n3-assignmentcollege742-gmailcoms-projects.vercel.app/api';
+// Use local backend for testing
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

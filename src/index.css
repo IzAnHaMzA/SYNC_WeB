@@ -126,6 +126,29 @@ button, .clickable {
   cursor: pointer;
 }
 
+/* Fix invisible text in input fields */
+input, textarea, select {
+  color: #1f2937 !important; /* Dark gray text */
+  background-color: #ffffff !important; /* White background */
+  opacity: 1 !important; /* Ensure fully visible */
+}
+
+/* Ensure input text is visible in all states */
+input:focus, textarea:focus, select:focus {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+input:active, textarea:active, select:active {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+input:disabled, textarea:disabled, select:disabled {
+  color: #6b7280 !important; /* Gray text for disabled state */
+  background-color: #f9fafb !important; /* Light gray background for disabled */
+}
+
 /* Futuristic shadows */
 .futuristic-shadow {
   box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2), 0 0 20px rgba(0, 212, 255, 0.1);

@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/SYNC_WeB/', // GitHub Pages base path
+  base: '/instok/', // GitHub Pages base path (change to '/' for local dev)
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

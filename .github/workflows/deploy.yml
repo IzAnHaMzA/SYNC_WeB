@@ -1,11 +1,10 @@
-name: Deploy to GitHub Pages
+name: Deploy INSTOK to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-
-permissions:
-  contents: write
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -22,14 +21,18 @@ jobs:
         cache: 'npm'
         
     - name: Install dependencies
-      run: npm ci --legacy-peer-deps
+      run: npm ci
       
-    - name: Build
+    - name: Build frontend
       run: npm run build
-      
+      env:
+        VITE_API_URL: https://your-backend-url.herokuapp.com/api
+        VITE_WEBSOCKET_URL: wss://your-backend-url.herokuapp.com
+        
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/main'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
+        cname: your-domain.com # Optional: if you have a custom domain

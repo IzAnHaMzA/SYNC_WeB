@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, MapPin, Hash, Play } from 'lucide-react';
 import { Post } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { api } from '../utils/api';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 // Mock user data for posts
 const getMockUserData = (userId: string) => {
@@ -39,11 +41,13 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, onLike }) => {
   const { user } = useAuth();
+  const { likePost, commentPost } = useWebSocket();
   const postUser = getMockUserData(post.user);
   const [isLiked, setIsLiked] = useState(post.likes.includes(user?._id || ''));
   const [likesCount, setLikesCount] = useState(post.likes.length);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
 
   const getFilterStyle = () => {
     if (!post.filters) return {};
@@ -59,6 +63,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike }) => {
       return;
     }
     
+    if (isLiking) return; // Prevent double-clicking
+    
+    setIsLiking(true);
+    
     try {
       if (isLiked) {
         await api.delete(`/posts/${post._id}/like`);
@@ -66,11 +74,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike }) => {
       } else {
         await api.post(`/posts/${post._id}/like`);
         setLikesCount(prev => prev + 1);
+        // Send real-time like event
+        likePost(post._id);
       }
       setIsLiked(!isLiked);
       onLike?.();
     } catch (error) {
       toast.error('Failed to update like');
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -188,14 +200,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike }) => {
       <div className="p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-4">
-            <button
+            <motion.button
               onClick={handleLike}
+              disabled={isLiking}
               className={`transition-colors ${
                 isLiked ? 'text-red-500' : 'text-gray-700'
-              }`}
+              } ${isLiking ? 'opacity-50' : ''}`}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.1 }}
             >
               <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-            </button>
+            </motion.button>
             <button className="text-gray-700">
               <MessageCircle className="w-6 h-6" />
             </button>

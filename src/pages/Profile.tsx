@@ -260,6 +260,9 @@ const Profile: React.FC = () => {
   const [showSuperchatModal, setShowSuperchatModal] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // Use current user's username if no username in URL
+  const targetUsername = username || currentUser?.username;
+
   // Check if we're on desktop
   React.useEffect(() => {
     const checkScreenSize = () => {
@@ -297,35 +300,53 @@ const Profile: React.FC = () => {
   };
 
   const { data: profileUser, isLoading: userLoading } = useQuery<User>(
-    ['user', username],
+    ['user', targetUsername],
     async () => {
       try {
-        const response = await api.get(`/users/${username}`);
+        const response = await api.get(`/users/${targetUsername}`);
         return response.data;
       } catch (error) {
+        // If this is the current user's profile and API fails, use current user data
+        if (currentUser && targetUsername === currentUser.username) {
+          return {
+            _id: currentUser._id,
+            username: currentUser.username,
+            fullName: currentUser.fullName,
+            email: currentUser.email,
+            avatar: currentUser.avatar,
+            bio: currentUser.bio,
+            followers: currentUser.followers || [],
+            following: currentUser.following || [],
+            posts: currentUser.posts || [],
+            isPrivate: currentUser.isPrivate,
+            isCreator: true, // Make current user a creator for demo
+            createdAt: currentUser.createdAt,
+            updatedAt: currentUser.updatedAt
+          };
+        }
         // Fallback to mock data if API fails
-        return getMockUserData(username);
+        return getMockUserData(targetUsername);
       }
     },
-    { enabled: !!username }
+    { enabled: !!targetUsername }
   );
 
   const { data: posts = [], isLoading: postsLoading } = useQuery<Post[]>(
-    ['user-posts', username],
+    ['user-posts', targetUsername],
     async () => {
       try {
-        const response = await api.get(`/users/${username}/posts`);
+        const response = await api.get(`/users/${targetUsername}/posts`);
         return response.data;
       } catch (error) {
         // Fallback to mock posts if API fails
-        return getMockPostsData(username);
+        return getMockPostsData(targetUsername);
       }
     },
-    { enabled: !!username }
+    { enabled: !!targetUsername }
   );
 
-  const isOwnProfile = currentUser?.username === username;
-  const isFollowing = currentUser?.following.includes(profileUser?._id || '');
+  const isOwnProfile = currentUser?.username === targetUsername;
+  const isFollowing = currentUser?.following?.includes(profileUser?._id || '') || false;
   const isCreator = profileUser?.isCreator || isOwnProfile;
 
   const handleFollow = async () => {

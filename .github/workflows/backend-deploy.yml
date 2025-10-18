@@ -1,9 +1,10 @@
 name: Deploy Backend to Heroku
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ 'server/**', 'package.json' ]
+  workflow_dispatch: # Only run manually for now
+  # push:
+  #   branches: [ main ]
+  #   paths: [ 'server/**', 'package.json' ]
 
 jobs:
   deploy-backend:
@@ -13,6 +14,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install Heroku CLI
+      run: |
+        curl https://cli-assets.heroku.com/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        
     - name: Deploy to Heroku
       uses: akhileshns/heroku-deploy@v3.12.14
       with:

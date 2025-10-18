@@ -44,14 +44,15 @@ const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// Initialize Redis cache
-initializeRedis().then(redisAvailable => {
-  if (redisAvailable) {
-    console.log('✅ Redis cache initialized');
-  } else {
-    console.log('⚠️ Using in-memory cache (Redis not available)');
-  }
-});
+// Initialize Redis cache (disabled for local development)
+// initializeRedis().then(redisAvailable => {
+//   if (redisAvailable) {
+//     console.log('✅ Redis cache initialized');
+//   } else {
+//     console.log('⚠️ Using in-memory cache (Redis not available)');
+//   }
+// });
+console.log('⚠️ Using in-memory cache (Redis disabled for local development)');
 
 // Initialize WebSocket
 const socketHandler = new SocketHandler(server);

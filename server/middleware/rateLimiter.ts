@@ -89,7 +89,7 @@ Object.keys(rateLimitConfigs).forEach(key => {
 const getClientId = (req: Request): string => {
   // Use user ID if authenticated, otherwise use IP
   const userId = (req as any).user?.id;
-  const ip = req.ip || req.connection.remoteAddress || 'unknown';
+  const ip = req.ip || req.socket?.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
   return userId ? `user:${userId}` : `ip:${ip}`;
 };
 
@@ -247,7 +247,7 @@ export const burstRateLimiter = (req: Request, res: Response, next: NextFunction
 
 // IP-based rate limiter for anonymous users
 export const ipRateLimiter = (req: Request, res: Response, next: NextFunction) => {
-  const ip = req.ip || req.connection.remoteAddress || 'unknown';
+  const ip = req.ip || req.socket?.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
   const key = `ip:${ip}`;
   
   const limiter = new RateLimiterMemory({
